@@ -341,7 +341,8 @@ class TestPyJWKClient:
         url = "https://dev-87evx9ru.auth0.com/.well-known/jwks.json"
         jwks_client = PyJWKClient(url, ssl_context=ssl.create_default_context())
 
-        jwk_set = jwks_client.get_jwk_set()
+        with mocked_success_response(RESPONSE_DATA_WITH_MATCHING_KID):
+            jwk_set = jwks_client.get_jwk_set()
 
         assert jwk_set is not None
 
@@ -352,6 +353,7 @@ class TestPyJWKClient:
         )
 
         with pytest.raises(PyJWKClientError):
-            jwks_client.get_jwk_set()
+            with mocked_success_response(RESPONSE_DATA_WITH_MATCHING_KID):
+                jwks_client.get_jwk_set()
 
         assert "Failed to get an expected error"
